@@ -1,8 +1,10 @@
-from django.shortcuts import render
+from django.shortcuts import render,redirect
+from .utils import generate_token 
+from django.views.generic.base import View
 from rest_framework import generics,status
 from django.views.generic import ListView
 from .serializers import UserSerializer,CreateUserSerializer,CreateActivitySerializer,ActivitySerializer,UpdateUserSerializer
-from .models import User,Activity,FriendRequest 
+from .models import User,Activity
 from rest_framework.views import APIView
 from rest_framework.response import Response 
 from rest_framework.permissions import IsAuthenticated,AllowAny
@@ -16,13 +18,14 @@ from django.contrib.auth.hashers import make_password
 from rest_framework.decorators import api_view,permission_classes   
 from rest_framework.authtoken.views import ObtainAuthToken
 import datetime
+from django.utils.http import urlsafe_base64_encode, urlsafe_base64_decode
+from django.core.mail import EmailMessage
 from django.template.loader import render_to_string
-from django.core.mail import send_mail
-
-
-
-
-
+from django.utils.encoding import force_bytes, force_text, DjangoUnicodeDecodeError
+from .utils import generate_token 
+from django.conf import settings
+from django.contrib.sites.shortcuts import get_current_site
+from django.http import HttpResponse
 
 # Create your views and endpoints here.
 
@@ -32,35 +35,33 @@ from django.core.mail import send_mail
 def registration_view(request):
     if request.method == 'POST':
         serializer = CreateUserSerializer(data=request.data)
-        data = {}
+        data = {}   
         if serializer.is_valid(): 
-        
             user = serializer.save()
-            print(user)
-            token = Token.objects.get(user=user).key
             data = serializer.data
-            data['token'] = token
-
-            send_mail(
-             'Subject here',
-             'Here is the message.',
-            'adityadurbha@gmail.com',
-            ['me180003018@iiti.ac.in'],
-            fail_silently=False,
-            html_message = render_to_string('mail_template.html')
+            user.is_active = False
+            user.save()
+            data['status'] = user.is_active
+            current_site = get_current_site(request)
+            message= render_to_string('mail_template.html',{
+                'user' : user,
+                'domain' : current_site.domain,
+                'uid' : urlsafe_base64_encode(force_bytes(user.pk)),
+                'token' : generate_token.make_token(user)
+                })
+            email_message  = EmailMessage(
+                'Social Cred$ Account',
+                message,
+                settings.EMAIL_HOST_USER,
+                ['me180003018@iiti.ac.in']
                 )
-
-            print(data)
+            email_message.send()
         else:
-            data = serializer.errors
+            data = { 'errors' : serializer.errors,
+                     'status' : 400 }
         return Response(data)
 
-#ACTIVATE USER
-@api_view(['PUT',])
-def activate_user(request):
-    if request.method == 'PUT':
-        request.user.is_active = True
-        Response({'status': 'account activated'})
+
 
 #GET USER PROFILE
 @api_view(['GET',])
@@ -74,6 +75,7 @@ def user_view(request,id):
         serializer = UserSerializer(user)
         return Response(serializer.data)
 
+
 #LIST ALL USERS
 @api_view(['GET',])
 @permission_classes((IsAuthenticated,))
@@ -82,6 +84,7 @@ def user_view_all(request):
     if request.method == "GET":
         serializer = UserSerializer(user)
         return Response(serializer.data)
+
 
 #UPDATE USER PROFILE
 @api_view(['PUT','DELETE',])
@@ -110,6 +113,7 @@ def user_update(request,id):
             data['failure'] = 'deletion failed'
         return Response(data=data)           
 
+
 #LOGIN 
 class CustomObtainAuthToken(ObtainAuthToken):
     def post(self, request, *args, **kwargs):
@@ -120,6 +124,7 @@ class CustomObtainAuthToken(ObtainAuthToken):
         data = serializer.data
         return Response({'token': token.key, 'id' : data['id'], 'first_name': data['first_name']})
 
+
 #USER LOG OUT
 class LogoutView(APIView):
     def get(self, request, format=None):
@@ -129,7 +134,6 @@ class LogoutView(APIView):
             'success' : 'logout success!'
         }
         return Response(data,status=status.HTTP_200_OK)
-
 
 
 # Creating an Activity
@@ -157,6 +161,8 @@ class AllActivityView(APIView):
         serializer = ActivitySerializer(acts, many=True)
         return Response(serializer.data)
 
+
+
 #GET user activities
 class UserActivityList(APIView):
     http_method_names = ['get']
@@ -165,6 +171,8 @@ class UserActivityList(APIView):
         acts = Activity.objects.filter(user = request.user.id )
         serializer = ActivitySerializer(acts , many =True)
         return Response(serializer.data)
+
+
 
 #GET ACTIVITY DETAIL
 @api_view(['GET','PUT', 'DELETE'])
@@ -196,16 +204,20 @@ def act_view(request,id):
         return Response(data=data)        
 
 
-# Sending a friend request
-@login_required
-def send_friend_request(request, userID):
-    from_user = request.user
-    to_user = User.objects.filter(id=userID)
-    friend_request,created = FriendRequest.objects.get_or_create(
-        from_user=from_user,
-        to_user=to_user
-    )
-    if created:
-        return Response('friend request sent')
-    else:
-        return Response('friend request was already sent')
+
+#ACCOUNT ACTIVATION
+class ActivateAccountView(View):
+    def get(self,request, uidb64, token):
+        try: 
+            print("trying")
+            uid = force_text(urlsafe_base64_decode(uidb64).decode())
+            user = User.objects.get(pk = uid)
+
+        except Exception as identifier:
+            user = None
+
+        if user is not None and generate_token.check_token(user,token):
+            user.is_active = True
+            user.save()
+            return HttpResponse("<html><body> <h1>Account Activated!!<br> <a href=https://socialcreds.netlify.app/login>Click here to continue</a></h1></body></html>")
+        return HttpResponse("<h1>lol</h1>")

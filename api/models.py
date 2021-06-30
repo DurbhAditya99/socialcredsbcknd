@@ -7,6 +7,7 @@ from django.db.models.signals import post_save
 from django.conf import settings
 import datetime
 from datetime import date
+from django.contrib.postgres.fields import ArrayField
 
 
 # Category choices
@@ -88,10 +89,12 @@ class User(AbstractBaseUser,PermissionsMixin):
     mobile_number = models.CharField(max_length=12)
     email_id      = models.EmailField(max_length=100,unique=True)
     created_at = models.DateTimeField(auto_now_add=True)
-    about = models.CharField(max_length=1000)
+    about = models.CharField(max_length=1000, default= 'None')
     account_balance = models.DecimalField(max_digits=2, decimal_places=1 , default=1)
     profile_pic = models.ImageField(upload_to='images/',null=True, blank=True)
     above_age = models.BooleanField(default = False)
+    clocked_hours = models.IntegerField(default= 0)
+    
    
     objects = CustomAccountManager()
 
@@ -137,11 +140,5 @@ class Activity(models.Model):
     category = models.CharField(max_length= 30,
                                 choices=CATEGORIES,
                                 default='Earth Creds')
+    founder = models.CharField(max_length = 30)
     
-
-
-#3 FRIEND REQUEST MODEL
-class FriendRequest(models.Model):
-    to_user = models.ForeignKey(User,related_name='to_user',on_delete=models.CASCADE)
-    from_user = models.ForeignKey(User,related_name='from_user',on_delete=models.CASCADE)
-

@@ -15,9 +15,8 @@ Including another URLconf
 """
 from django.contrib import admin
 from django.urls import path
-from .views import activate_user,registration_view,user_view, user_update, LogoutView,user_view_all,ActivityPostView,CustomObtainAuthToken,AllActivityView,act_view,UserActivityList
+from .views import ActivateAccountView,registration_view,user_view, user_update, LogoutView,user_view_all,ActivityPostView,CustomObtainAuthToken,AllActivityView,act_view,UserActivityList
 
-from .auth import CustomAuthToken
 
 urlpatterns = [
     path('user/all',user_view_all),
@@ -30,6 +29,5 @@ urlpatterns = [
     path('display/all',AllActivityView.as_view()),
     path('detail/<int:id>', act_view , name='detail'),
     path('create/', ActivityPostView, name='activity'),  
-  #  path('send_friend_request/<int:id>',send_friend_request, name='send_friend_request'),
-    path('act_user',activate_user )
+    path('activate/<uidb64>/<token>/', ActivateAccountView.as_view() , name= 'activate')
 ]

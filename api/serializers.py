@@ -48,7 +48,8 @@ class CreateActivitySerializer(serializers.ModelSerializer):
             'end_date' ,
             'est_hours', 
             'act_status',
-            'category' ) 
+            'category',
+            'founder' ) 
 
 
 

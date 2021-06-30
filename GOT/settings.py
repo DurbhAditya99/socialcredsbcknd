@@ -12,7 +12,12 @@ https://docs.djangoproject.com/en/3.1/ref/settings/
 
 from pathlib import Path
 from datetime import timedelta
-import os.path
+import os
+import environ
+from dotenv import load_dotenv
+
+env = environ.Env()
+environ.Env.read_env()
 
 # Build paths inside the project like this: BASE_DIR / 'subdir'.
 BASE_DIR = Path(__file__).resolve().parent.parent
@@ -23,12 +28,10 @@ PROJECT_ROOT = os.path.dirname(os.path.abspath(__file__))
 # See https://docs.djangoproject.com/en/3.1/howto/deployment/checklist/
 
 # SECURITY WARNING: keep the secret key used in production secret!
-SECRET_KEY = '=f#qh1$22z2b2igh+f$^(z*32_1rlcf*wv-e*#@vx1i1+0cj9+'
+SECRET_KEY = env('SECRET_KEY')
 
 # SECURITY WARNING: don't run with debug turned on in production!
-DEBUG = False
-
-ALLOWED_HOSTS = ['127.0.0.1', 'socialcreds.herokuapp.com/']
+DEBUG = True
 
 
 # Application definition
@@ -45,7 +48,7 @@ INSTALLED_APPS = [
     "frontend.apps.FrontendConfig",
     'rest_framework.authtoken',
     'corsheaders',
-]
+    ]
 
 AUTH_USER_MODEL = 'api.User'
 
@@ -62,6 +65,8 @@ MIDDLEWARE = [
     'django.middleware.common.CommonMiddleware',
 
 ]
+
+CORS_ORIGIN_ALLOW_ALL = True
 
 ROOT_URLCONF = 'GOT.urls'
 
@@ -89,8 +94,19 @@ WSGI_APPLICATION = 'GOT.wsgi.application'
 
 DATABASES={
    'default':{
-        'ENGINE': 'django.db.backends.sqlite3',
-        'NAME': 'gotdatabase'
+      
+        'ENGINE': 'django.db.backends.postgresql_psycopg2',
+
+        'NAME': 'new',
+
+        'USER': 'postgres',
+
+        'PASSWORD': 'lmaonoob',
+
+        'HOST': "127.0.0.1" ,
+
+        'PORT': '5432',
+
    }
 }
 
@@ -142,10 +158,11 @@ STATIC_URL = '/static/'
 
 MEDIA_URL = '/images/'
 
-
+#EMAIL VERIFICATION
 EMAIL_BACKEND = 'django.core.mail.backends.smtp.EmailBackend'
-EMAIL_HOST = 'smtp.gmail.com'
+EMAIL_HOST = "smtp.gmail.com"
+EMAIL_HOST_USER = env('EMAIL_HOST_USER')
+EMAIL_HOST_PASSWORD = env('EMAIL_HOST_PASSWORD')
+EMAIL_USE_TLS = True
+EMAIL_USE_SSL = False
 EMAIL_PORT = 587
-EMAIL_HOST_USER = 'adityadurbha@gmail.com'
-EMAIL_HOST_PASSWORD = 'Ganesha@1999'
-EMAIL_USE_TLS =True
