@@ -15,6 +15,7 @@ from datetime import timedelta
 import os
 import environ
 from dotenv import load_dotenv
+import django_heroku
 
 env = environ.Env()
 environ.Env.read_env()
@@ -166,3 +167,6 @@ EMAIL_HOST_PASSWORD = env('EMAIL_HOST_PASSWORD')
 EMAIL_USE_TLS = True
 EMAIL_USE_SSL = False
 EMAIL_PORT = 587
+
+
+django_heroku.settings(locals())
