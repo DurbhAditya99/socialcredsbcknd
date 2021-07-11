@@ -33,7 +33,7 @@ SECRET_KEY = env('SECRET_KEY')
 
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = False
-ALLOWED_HOSTS = ['127.0.0.1','https://socialcreds.herokuapp.com/']
+ALLOWED_HOSTS = ['socialcredsbnd.herokuapp.com','127.0.0.1','https://socialcreds.netlify.app/','http://localhost:3000/']
 
 
 
@@ -67,6 +67,7 @@ MIDDLEWARE = [
     'django.middleware.common.CommonMiddleware',
 
 ]
+
 
 CORS_ORIGIN_ALLOW_ALL = True
 

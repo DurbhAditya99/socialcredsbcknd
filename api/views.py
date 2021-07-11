@@ -116,13 +116,16 @@ def user_update(request,id):
 
 #LOGIN 
 class CustomObtainAuthToken(ObtainAuthToken):
+    
+    http_method_names = ['get','post']
+
     def post(self, request, *args, **kwargs):
         response = super(CustomObtainAuthToken, self).post(request, *args, **kwargs)
         token = Token.objects.get(key=response.data['token'])
         user = User.objects.get(id= token.user_id)
         serializer = UserSerializer(user)
         data = serializer.data
-        return Response({'token': token.key, 'id' : data['id'], 'first_name': data['first_name']})
+        return Response({"token": token.key, "id" : data['id'], "first_name": data['first_name']})
 
 
 #USER LOG OUT
