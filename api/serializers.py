@@ -1,5 +1,5 @@
 from rest_framework import serializers
-from .models import User,Activity
+from .models import User,Activity,Budget
 
 
 class UserSerializer(serializers.ModelSerializer):
@@ -35,22 +35,33 @@ class CreateUserSerializer(serializers.ModelSerializer):
         account.save()
         return account
     
+class BudgetSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = Budget
+        fields = ( 
+                'title',
+                'description',
+                'amount' )
+
 
 class CreateActivitySerializer(serializers.ModelSerializer):
+
     class Meta:
         model = Activity   
         fields = (
             'title',
             'vol_req',
+            'mother_vol',
+            'what_donating',
+            'where_donating',
             'service_type',
             'description',  
             'start_date' , 
-            'end_date' ,
             'est_hours', 
             'act_status',
             'category',
-            'founder' ) 
-
+            'color',
+            'founder_name' ) 
 
 
 

@@ -131,14 +131,25 @@ class Activity(models.Model):
                                     choices=EARN_OR_BURN, 
                                     default= 'Offer' )
     title=models.CharField(max_length=50)
-    description=models.CharField(max_length= 200)
+    description=models.CharField(max_length= 500)
+    what_donating = models.CharField(max_length= 300, default = 'Nil')
+    where_donating = models.CharField(max_length= 300, default = 'Nil')
     act_status = models.BooleanField(default= True)
     start_date = models.DateField()
-    end_date = models.DateField()
     vol_req = models.IntegerField(default=5)
+    mother_vol = models.IntegerField(default= 2)
     est_hours = models.IntegerField()
     category = models.CharField(max_length= 30,
                                 choices=CATEGORIES,
                                 default='Earth Creds')
-    founder = models.CharField(max_length = 30)
+    founder = models.ForeignKey('User', on_delete = models.CASCADE, default = 1)
+    founder_name = models.CharField(max_length= 20, default='hello')
+    color = models.CharField(max_length= 7, default= '#ffdddd')
+
     
+
+class Budget(models.Model):
+    activity = models.ForeignKey('Activity', related_name= 'costs',on_delete= models.CASCADE)
+    title = models.CharField(max_length = 30)
+    description = models.CharField(max_length = 60)
+    amount = models.IntegerField(default = 1)

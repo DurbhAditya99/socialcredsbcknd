@@ -142,10 +142,13 @@ class LogoutView(APIView):
 def ActivityPostView(request):
     if request.method == 'POST':
         serializer = CreateActivitySerializer(data=request.data)
+        print('hello')
         data = {}
         if serializer.is_valid():
             act = serializer.save()
+            act.founder = request.user
             act.user.add(request.user)
+            act.save()
             data = serializer.data
         else:
             data = serializer.errors
@@ -157,7 +160,7 @@ class AllActivityView(APIView):
     http_method_names = ['get',]
 
     def get(self, request, format=None):
-        acts = Activity.objects.all()
+        acts = Activity.objects.filter().exclude(user= request.user.id)
         serializer = ActivitySerializer(acts, many=True)
         return Response(serializer.data)
 
@@ -195,6 +198,7 @@ def act_view(request,id):
         return Response(data=data)    
     
     if request.method == 'DELETE':
+        print('dele')
         operation = act.delete()
         data = {}
         if operation:
@@ -206,7 +210,11 @@ def act_view(request,id):
 
 
 #ACCOUNT ACTIVATION
-class ActivateAccountView(View):
+
+class ActivateAccountView(APIView):
+    http_method_names = ['get']
+    permission_classes = []
+   
     def get(self,request, uidb64, token):
         try: 
             print("trying")
@@ -217,7 +225,9 @@ class ActivateAccountView(View):
             user = None
 
         if user is not None and generate_token.check_token(user,token):
+            data ={}
             user.is_active = True
             user.save()
-            return HttpResponse("<html><body> <h1>Account Activated!!<br> <a href=https://socialcreds.netlify.app/login>Click here to continue</a></h1></body></html>")
-        return HttpResponse("<h1>lol</h1>")
+            data['status'] = 'Success'
+            return Response(data)
+        return Response({'status': 'failed'})
