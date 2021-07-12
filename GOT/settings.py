@@ -16,7 +16,7 @@ import environ
 from dotenv import load_dotenv
 import os
 import django_heroku
-
+from django.core.wsgi import get_wsgi_application
 env = environ.Env()
 environ.Env.read_env()
 
