@@ -100,18 +100,19 @@ DATABASES={
       
         'ENGINE': 'django.db.backends.postgresql_psycopg2',
 
-        'NAME': 'new',
+        'NAME': 'd88j0b42vo8t7p',
 
-        'USER': 'postgres',
+        'USER': 'spdawqzxejsptz',
 
-        'PASSWORD': 'lmaonoob',
+        'PASSWORD': '4dac088617d0db2058aa99a653560877e62389f8eea9a27a2e4e9d0f5da166da',
 
-        'HOST': "127.0.0.1" ,
+        'HOST': "ec2-52-2-118-38.compute-1.amazonaws.com" ,
 
         'PORT': '5432',
 
    }
 }
+
 
 # Password validation
 # https://docs.djangoproject.com/en/3.1/ref/settings/#auth-password-validators
