@@ -60,7 +60,7 @@ def registration_view(request):
             data = { 'errors' : serializer.errors,
                      'status' : 400 }
         return Response(data)
-
+    
 
 
 #GET USER PROFILE
