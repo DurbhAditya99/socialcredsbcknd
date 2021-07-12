@@ -33,7 +33,7 @@ SECRET_KEY = env('SECRET_KEY')
 
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = False
-ALLOWED_HOSTS = ['socialcredsbnd.herokuapp.com','127.0.0.1','https://socialcreds.netlify.app/','http://localhost:3000/']
+ALLOWED_HOSTS = ['socialcredsbnd.herokuapp.com']
 
 
 

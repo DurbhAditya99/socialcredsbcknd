@@ -53,7 +53,7 @@ def registration_view(request):
                 'Social Cred$ Account',
                 message,
                 settings.EMAIL_HOST_USER,
-                ['me180003018@iiti.ac.in']
+                [user.email_id]
                 )
             email_message.send()
         else:
