@@ -60,7 +60,7 @@ def registration_view(request):
             data = { 'errors' : serializer.errors,
                      'status' : 400 }
         return Response(data)
-    
+
 
 
 #GET USER PROFILE
@@ -118,6 +118,11 @@ def user_update(request,id):
 class CustomObtainAuthToken(ObtainAuthToken):
     
     http_method_names = ['get','post']
+
+    def get(request):
+        users = User.objects.all()
+        serializer = UserSerializer(users,many=True)
+        return Response(serializer.data)
 
     def post(self, request, *args, **kwargs):
         response = super(CustomObtainAuthToken, self).post(request, *args, **kwargs)
