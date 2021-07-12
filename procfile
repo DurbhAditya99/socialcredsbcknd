@@ -1,1 +1,1 @@
-web: gunicorn GOT.wsgi --log-file -
+web: gunicorn GOT.wsgi
