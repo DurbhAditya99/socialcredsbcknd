@@ -158,9 +158,14 @@ def ActivityPostView(request):
             act.user.add(request.user)
             act.save()
             data = serializer.data
-        else:
+            response = Response(data)
+            response.headers.add('Access-Control-Allow-Origin', 'https://socialcreds.netlify.app/')
+            response.headers.add('Access-Control-Allow-Headers', 'Content-Type,Authorization')
+            response.headers.add('Access-Control-Allow-Methods', 'GET,PUT,POST,DELETE,OPTIONS')
+            response.headers.add('Access-Control-Allow-Credentials', 'true')
+        else:   
             data = serializer.errors
-        return Response(data)
+        return response
 
 
 #VIEW ALL ACTIVITY

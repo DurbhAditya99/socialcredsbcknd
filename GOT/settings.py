@@ -32,9 +32,14 @@ PROJECT_ROOT = os.path.dirname(os.path.abspath(__file__))
 SECRET_KEY = env('SECRET_KEY')
 
 # SECURITY WARNING: don't run with debug turned on in production!
-DEBUG = False
-ALLOWED_HOSTS = ['socialcredsbnd.herokuapp.com']
 
+DEBUG = False
+ALLOWED_HOSTS = ['socialcredsbnd.herokuapp.com','127.0.0.1','https://socialcreds.netlify.app/']
+
+CORS_ORIGIN_ALLOW_ALL = False
+CORS_ORIGIN_WHITELIST = (
+    'https://socialcreds.netlify.app/',
+)
 
 
 # Application definition
@@ -65,11 +70,9 @@ MIDDLEWARE = [
     'django.middleware.clickjacking.XFrameOptionsMiddleware',
     'corsheaders.middleware.CorsMiddleware',
     'django.middleware.common.CommonMiddleware',
-
 ]
 
 
-CORS_ORIGIN_ALLOW_ALL = True
 
 ROOT_URLCONF = 'GOT.urls'
 
